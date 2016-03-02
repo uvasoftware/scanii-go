@@ -94,7 +94,7 @@ func ValidAuth(a *APIAuth) bool {
 	return false
 }
 
-// ConvertDate converts a string to a instance of time.Time
+// ConvertDate converts a string to an instance of time.Time
 func ConvertDate(dt string) (time.Time, error) {
 	sd, err := time.Parse(Layout, dt)
 	if err != nil {
