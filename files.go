@@ -1,8 +1,10 @@
 package scaniigo
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 )
 
 // ProcessFileResponse holds the returned value from a call to
@@ -92,6 +94,11 @@ func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, 
 	if err := Validate(pfp); err != nil {
 		return nil, err
 	}
+
+	var data url.Values
+	data.Set("callback", pfp.Callback)
+	data.Add("metadata", pfp.Metadata)
+
 	req, err := http.NewRequest("POST", c.Endpoint+FilePath, nil)
 	if err != nil {
 		return nil, err
@@ -117,7 +124,12 @@ func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*AsyncFileProcessResp
 	if err := Validate(pfp); err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, nil)
+
+	var data url.Values
+	data.Set("callback", pfp.Callback)
+	data.Add("metadata", pfp.Metadata)
+
+	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, bytes.NewBufferString(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +154,13 @@ func (c *Client) ProcessRemoteFileAsync(rfap *RemoteFileAsyncParams) (*AsyncFile
 	if err := Validate(rfap); err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, nil)
+
+	var data url.Values
+	data.Set("location", rfap.Location)
+	data.Add("callback", rfap.Callback)
+	data.Add("metadata", rfap.Metadata)
+
+	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, bytes.NewBufferString(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
