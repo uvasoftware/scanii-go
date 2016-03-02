@@ -1,5 +1,10 @@
 package scaniigo
 
+import (
+	"encoding/json"
+	"net/http"
+)
+
 // ProcessedFileResponse holds the returned value from a call to
 // the previously processed file endpoint
 type ProcessFileResponse struct {
@@ -20,15 +25,65 @@ type ProcessFileParams struct {
 
 // RetrieveProcessedFile retrieves a previously processed file resource
 func (c *Client) RetrieveProcessedFile(id string) (*ProcessFileResponse, error) {
-	return nil, nil
+	req, err := http.NewRequest("GET", c.Endpoint+FilePath+"/"+id, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var pfr ProcessFileResponse
+	if err := json.NewDecoder(res.Body).Decode(&pfr); err != nil {
+		return nil, err
+	}
+	return &pfr, nil
 }
 
 // ProcessFileSync submits a file for processing synchronously
-func (c *Client) ProcessFileSync(pfr *ProcessFileParams) (*ProcessFileResponse, error) {
-	return nil, nil
+func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, error) {
+	req, err := http.NewRequest("POST", c.Endpoint+FilePath, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
+	req.Header.Set("Content-Type", "multipart/form-data")
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var pfr ProcessFileResponse
+	if err := json.NewDecoder(res.Body).Decode(&pfr); err != nil {
+		return nil, err
+	}
+	return &pfr, nil
 }
 
 // ProcessFileAsync submits a file for processing synchronously
-func (c *Client) ProcessFileAsync(pfr *ProcessFileParams) (*ProcessFileResponse, error) {
-	return nil, nil
+func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*ProcessFileResponse, error) {
+	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
+	req.Header.Set("Content-Type", "multipart/form-data")
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var pfr ProcessFileResponse
+	if err := json.NewDecoder(res.Body).Decode(&pfr); err != nil {
+		return nil, err
+	}
+	return &pfr, nil
 }
