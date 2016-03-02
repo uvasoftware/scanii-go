@@ -11,22 +11,20 @@ import (
 const baseURL = "https://api.scanii.com"
 const basePath = "/v"
 
-const (
-	// PingPath contains the path to the ping resource
-	PingPath = "/ping"
+// PingPath contains the path to the ping resource
+const PingPath = "/ping"
 
-	// FilePath contains the path to the files resource
-	FilePath = "/files"
+// FilePath contains the path to the files resource
+const FilePath = "/files"
 
-	// FileAsyncPath contains the path to the files async resource
-	FileAsyncPath = FilePath + "/async"
+// FileAsyncPath contains the path to the files async resource
+const FileAsyncPath = FilePath + "/async"
 
-	// FileFetchPath contains the path to the files fetch resource
-	FileFetchPath = FilePath + "/fetch"
+// FileFetchPath contains the path to the files fetch resource
+const FileFetchPath = FilePath + "/fetch"
 
-	// AuthPath contains the path to the auth tokens resource
-	AuthPath = "/auth/tokens"
-)
+// AuthPath contains the path to the auth tokens resource
+const AuthPath = "/auth/tokens"
 
 const clientTimeout = 30
 

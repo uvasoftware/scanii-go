@@ -45,7 +45,8 @@ func (p *ProcessFileParams) Validate() error {
 
 // RemoteFileAsyncParams holds the options needed for remote async process calls
 type RemoteFileAsyncParams struct {
-	// Location contains the URL of the file to be fetched and processed
+	// Location contains the URL of the file to be fetched and processed.  This
+	// should be escaped prior to processing
 	Location string
 
 	// Callback is an optional callback URL to be notified once processing
