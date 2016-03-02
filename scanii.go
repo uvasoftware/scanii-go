@@ -22,9 +22,6 @@ const (
 
 const clientTimeout = 30
 
-// Layout holds the default layout for timestamps
-const Layout = "2006-01-02T15:04"
-
 // APIAuth holds the pieces needed to authenticate against the API
 type APIAuth struct {
 	Key    string
@@ -96,7 +93,7 @@ func ValidAuth(a *APIAuth) bool {
 
 // ConvertDate converts a string to an instance of time.Time
 func ConvertDate(dt string) (time.Time, error) {
-	sd, err := time.Parse(Layout, dt)
+	sd, err := time.Parse(time.RFC3339Nano, dt)
 	if err != nil {
 		return time.Time{}, err
 	}
