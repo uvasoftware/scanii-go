@@ -20,7 +20,7 @@ endef
 all: install
 
 test:
-	$(GOTEST) -v -cover github.com/briandowns/scanii-go
+	$(GOTEST) -v -cover github.com/uvasoftware/scanii-go
 
 dep: git hg
 
