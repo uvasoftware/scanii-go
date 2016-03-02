@@ -15,8 +15,6 @@ Run the local doc server.
 $ godoc -http=":6060"
 ```
 
-## Features
-
 ## Install
 
 ```sh
@@ -33,8 +31,10 @@ $ make dep
 
 ### Testing
 
-Test all changes by running the command below.  This is a convenience for the actual command to run Go unit testing, `go test -v -cover ./...`
+Test all changes by running the command below.  
 
 ```sh
 make test
 ```
+
+This is a convenience for the actual command to run Go unit testing, `go test -v -cover ./...` .  It's best to run the `make` command.
