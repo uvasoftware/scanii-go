@@ -1,5 +1,7 @@
 # scanii-go
 
+WIP 
+
 [![GoDoc](https://godoc.org/github.com/uvasoftware/scanii-go?status.svg)](https://godoc.org/github.com/uvasoftware/scanii-go)
 
 scanii-go is a library for use with the [UVA Soft](http://www.uvasoftware.com/) [scanii.com](http://www.scanii.com) API.
