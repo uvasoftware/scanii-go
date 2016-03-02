@@ -16,11 +16,28 @@ type ProcessFileResponse struct {
 	ContentType   string   `json:"content_type"`
 }
 
-// ProcessFileRequest holds; the options needed for the given API call
+// ProcessFileRequest holds the options needed for processing calls
 type ProcessFileParams struct {
-	FileLocation string
-	Callback     string
-	Metadata     string
+	// File has the contents of the file to be processed
+	File string
+
+	// Callback is an optional callback URL to be notified once processing is completed
+	Callback string
+
+	// Metadata is an optional metadata argument to be stored with the resource
+	Metadata string
+}
+
+// ProcessFileAsyncRequest holds the options needed for async process calls
+type ProcessFileAsyncParams struct {
+	// Location contains the URL of the file to be fetched and processed
+	Location string
+
+	// Callback is an optional callback URL to be notified once processing is completed
+	Callback string
+
+	// Metadata is an optional metadata argument to be stored with the resource
+	Metadata string
 }
 
 // RetrieveProcessedFile retrieves a previously processed file resource
