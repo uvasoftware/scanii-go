@@ -16,6 +16,8 @@ type TempAuthTokenResponse struct {
 // TempAuthTokenParams holds the parameters for calls to create a
 // temp token
 type TempAuthTokenParams struct {
+	// Timeout is the number of seconds this token should be valid for
+	// (optional defaults to 300 seconds)
 	Timeout int
 }
 

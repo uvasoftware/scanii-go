@@ -21,7 +21,8 @@ type ProcessFileParams struct {
 	// File has the contents of the file to be processed
 	File string
 
-	// Callback is an optional callback URL to be notified once processing is completed
+	// Callback is an optional callback URL to be notified once processing
+	// is completed
 	Callback string
 
 	// Metadata is an optional metadata argument to be stored with the resource
@@ -33,7 +34,8 @@ type ProcessFileAsyncParams struct {
 	// Location contains the URL of the file to be fetched and processed
 	Location string
 
-	// Callback is an optional callback URL to be notified once processing is completed
+	// Callback is an optional callback URL to be notified once processing
+	// is completed
 	Callback string
 
 	// Metadata is an optional metadata argument to be stored with the resource
