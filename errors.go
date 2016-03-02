@@ -19,6 +19,6 @@ var ErrInvalidAuth = errors.New("invalid auth parameters")
 var ErrInvalidDataType = errors.New("invalid data type returned")
 
 // ErrUnauthorized is given when a request receives a 401
-type ErrUnauthroized struct {
+type ErrUnauthorized struct {
 	Error string
 }

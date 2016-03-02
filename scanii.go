@@ -20,7 +20,7 @@ const (
 	// FileAsyncPath contains the path to the files async resource
 	FileAsyncPath = FilePath + "/async"
 
-	// fileFetchPath contains the path to the files fetch resource
+	// FileFetchPath contains the path to the files fetch resource
 	FileFetchPath = FilePath + "/fetch"
 
 	// AuthPath contains the path to the auth tokens resource
