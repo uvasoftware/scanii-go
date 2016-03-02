@@ -25,6 +25,10 @@ $ go get github.com/uvasoftware/scanii-go
 
 ## Development
 
+When the API is expanded or altered, one can simply add or adjust the correlated method mapping.
+
+Field validation on parameter types is done by passing the given type to a Validate() function.  This function expects a parameter of type Validator which is an interface that implements a function with the signature of `Validate() error`.  
+
 ### Dependencies
 
 ```sh
