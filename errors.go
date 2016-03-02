@@ -18,6 +18,12 @@ var ErrInvalidAuth = errors.New("invalid auth parameters")
 // returned from a call and it's not the one it's expecting
 var ErrInvalidDataType = errors.New("invalid data type returned")
 
+// ErrFileFieldEmpty is given when a param type has an empty file field
+var ErrFileFieldEmpty = errors.New("file field empty")
+
+// ErrLocationFieldEmpty is given when a param type has an empty location field
+var ErrLocationFieldEmpty = errors.New("location field empty")
+
 // ErrUnauthorized is given when a request receives a 401
 type ErrUnauthorized struct {
 	Error string

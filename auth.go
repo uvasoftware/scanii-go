@@ -21,6 +21,12 @@ type TempAuthTokenParams struct {
 	Timeout int
 }
 
+// Validate makes sure that the required parameters are present when this time is
+// to be used
+func (p *TempAuthTokenParams) Validate() error {
+	return nil
+}
+
 // RetrieveAuthToken retrieves a previously created token
 func (c *Client) RetrieveAuthToken(id string) (*TempAuthTokenResponse, error) {
 	req, err := http.NewRequest("GET", c.Endpoint+AuthPath+"/"+id, nil)

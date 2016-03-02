@@ -2,6 +2,7 @@ package scaniigo
 
 import (
 	"crypto/tls"
+	"errors"
 	"net/http"
 	"os"
 	"time"
@@ -48,6 +49,11 @@ type ClientOpts struct {
 	Validate bool
 }
 
+// Validator is an interface containing a Validate method
+type Validator interface {
+	Validate() error
+}
+
 // NewClient creates a new reference to a Client
 func NewClient(co *ClientOpts) (*Client, error) {
 	tr := &http.Transport{
@@ -90,6 +96,14 @@ func getAuth() (*APIAuth, error) {
 	return a, nil
 }
 
+// Validate checks to make sure the given auth is valid
+func (a *APIAuth) Validate() error {
+	if len(a.Key) == 32 && len(a.Secret) == 9 {
+		return errors.New("")
+	}
+	return errors.New("")
+}
+
 // ValidAuth checks to make sure the given auth is valid
 func ValidAuth(a *APIAuth) bool {
 	if len(a.Key) == 32 && len(a.Secret) == 9 {
@@ -105,4 +119,13 @@ func ConvertDate(dt string) (time.Time, error) {
 		return time.Time{}, err
 	}
 	return sd, nil
+}
+
+// Validate runs the Validate method on the type passed in
+// assuming the passed in type implements the Validator interface
+func Validate(p Validator) error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
+	return nil
 }
