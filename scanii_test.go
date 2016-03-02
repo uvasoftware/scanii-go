@@ -41,7 +41,7 @@ func TestValidAuth(t *testing.T) {
 		t.Error(err)
 	}
 	if !ValidAuth(a) {
-		t.Error()
+		t.Error(ErrInvalidAuth)
 	}
 }
 

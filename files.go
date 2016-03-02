@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// ProcessedFileResponse holds the returned value from a call to
+// ProcessFileResponse holds the returned value from a call to
 // the previously processed file endpoint
 type ProcessFileResponse struct {
 	ID            string   `json:"id"`
@@ -16,7 +16,7 @@ type ProcessFileResponse struct {
 	ContentType   string   `json:"content_type"`
 }
 
-// ProcessFileRequest holds the options needed for processing calls
+// ProcessFileParams holds the options needed for processing calls
 type ProcessFileParams struct {
 	// File has the contents of the file to be processed
 	File string
@@ -29,7 +29,7 @@ type ProcessFileParams struct {
 	Metadata string
 }
 
-// ProcessFileAsyncRequest holds the options needed for async process calls
+// ProcessFileAsyncParams holds the options needed for async process calls
 type ProcessFileAsyncParams struct {
 	// Location contains the URL of the file to be fetched and processed
 	Location string

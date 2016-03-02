@@ -18,7 +18,7 @@ var ErrInvalidAuth = errors.New("invalid auth parameters")
 // returned from a call and it's not the one it's expecting
 var ErrInvalidDataType = errors.New("invalid data type returned")
 
-// ErrUnauthorizedRequest is given when a request receives a 401
+// ErrUnauthorized is given when a request receives a 401
 type ErrUnauthroized struct {
 	Error string
 }

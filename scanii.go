@@ -11,12 +11,19 @@ const baseURL = "https://api.scanii.com"
 const basePath = "/v"
 
 const (
+	// PingPath contains the path to the ping resource
 	PingPath = "/ping"
 
-	FilePath      = "/files"
+	// FilePath contains the path to the files resource
+	FilePath = "/files"
+
+	// FileAsyncPath contains the path to the files async resource
 	FileAsyncPath = FilePath + "/async"
+
+	// fileFetchPath contains the path to the files fetch resource
 	FileFetchPath = FilePath + "/fetch"
 
+	// AuthPath contains the path to the auth tokens resource
 	AuthPath = "/auth/tokens"
 )
 
