@@ -1,4 +1,5 @@
 # scanii-go
+<<<<<<< HEAD
 
 
 [![GoDoc](https://godoc.org/github.com/uvasoftware/scanii-go?status.svg)](https://godoc.org/github.com/uvasoftware/scanii-go)
@@ -31,3 +32,6 @@ $ go get github.com/uvasoftware/scanii-go
 $ make dep
 ```
 
+=======
+Scanii golang client
+>>>>>>> 1650cbb4143650a0db4bfcc485daebd3eba17b15
