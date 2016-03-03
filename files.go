@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -92,12 +93,8 @@ func (c *Client) RetrieveProcessedFile(id string) (*ProcessFileResponse, error) 
 	return &pfr, nil
 }
 
-// ProcessFileSync submits a file for processing synchronously
-func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, error) {
-	if err := Validate(pfp); err != nil {
-		return nil, err
-	}
-
+// builds a bytes buffer with the given file
+func (pfp *ProcessFileParams) Generate(c *Client) (*http.Request, error) {
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 
@@ -127,13 +124,25 @@ func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, 
 	}
 
 	w.Close()
-
 	req, err := http.NewRequest("POST", c.Endpoint+FilePath, &b)
 	if err != nil {
 		return nil, err
 	}
 	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
 	req.Header.Set("Content-Type", w.FormDataContentType())
+	return req, nil
+}
+
+// ProcessFileSync submits a file for processing synchronously
+func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, error) {
+	if err := Validate(pfp); err != nil {
+		return nil, err
+	}
+
+	req, err := GenerateAPIRequest(c, pfp)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
