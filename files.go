@@ -151,7 +151,7 @@ func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, 
 		return nil, err
 	}
 
-	req, err := GenerateAPIRequest(c, pfp, "sync")
+	req, err := GenerateFileAPIRequest(c, pfp, "sync")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -175,7 +175,7 @@ func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*AsyncFileProcessResp
 		return nil, err
 	}
 
-	req, err := GenerateAPIRequest(c, pfp, "async")
+	req, err := GenerateFileAPIRequest(c, pfp, "async")
 	if err != nil {
 		log.Fatalln(err)
 	}

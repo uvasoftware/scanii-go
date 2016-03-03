@@ -133,8 +133,8 @@ func Validate(p Validator) error {
 	return nil
 }
 
-// GenerateAPIRequest build an http.Request from the given arguments. The second argument has to
+// GenerateFileAPIRequest build an http.Request from the given arguments. The second argument has to
 // be a type that implements the RequestGenerator interface
-func GenerateAPIRequest(c *Client, rg RequestGenerator, execType string) (*http.Request, error) {
+func GenerateFileAPIRequest(c *Client, rg RequestGenerator, execType string) (*http.Request, error) {
 	return rg.Generate(c, execType)
 }
