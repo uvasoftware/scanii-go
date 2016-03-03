@@ -24,6 +24,10 @@ var ErrFileFieldEmpty = errors.New("file field empty")
 // ErrLocationFieldEmpty is given when a param type has an empty location field
 var ErrLocationFieldEmpty = errors.New("location field empty")
 
+// ErrUnrecognizedExecType is given when execType is used and doesn't match
+// "sync" or "async"
+var ErrUnrecognizedExecType = errors.New("unrecognized execType")
+
 // ErrUnauthorized is given when a request receives a 401
 type ErrUnauthorized struct {
 	Error string

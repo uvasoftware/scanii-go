@@ -54,7 +54,7 @@ type Validator interface {
 
 // RequestGenerator is an interface to be used to generate HTTP.Request types
 type RequestGenerator interface {
-	Generate(c *Client) (*http.Request, error)
+	Generate(c *Client, execType string) (*http.Request, error)
 }
 
 // NewClient creates a new reference to a Client
@@ -135,6 +135,6 @@ func Validate(p Validator) error {
 
 // GenerateAPIRequest build an http.Request from the given arguments. The second argument has to
 // be a type that implements the RequestGenerator interface
-func GenerateAPIRequest(c *Client, rg RequestGenerator) (*http.Request, error) {
-	return rg.Generate(c)
+func GenerateAPIRequest(c *Client, rg RequestGenerator, execType string) (*http.Request, error) {
+	return rg.Generate(c, execType)
 }

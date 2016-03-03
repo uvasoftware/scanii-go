@@ -94,7 +94,7 @@ func (c *Client) RetrieveProcessedFile(id string) (*ProcessFileResponse, error) 
 }
 
 // builds a bytes buffer with the given file
-func (pfp *ProcessFileParams) Generate(c *Client) (*http.Request, error) {
+func (pfp *ProcessFileParams) Generate(c *Client, execType string) (*http.Request, error) {
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 
@@ -122,12 +122,24 @@ func (pfp *ProcessFileParams) Generate(c *Client) (*http.Request, error) {
 	if _, err = fw.Write([]byte(pfp.Metadata)); err != nil {
 		return nil, err
 	}
-
 	w.Close()
-	req, err := http.NewRequest("POST", c.Endpoint+FilePath, &b)
-	if err != nil {
-		return nil, err
+
+	var req *http.Request
+	switch execType {
+	case "async":
+		req, err = http.NewRequest("POST", c.Endpoint+FilePath, &b)
+		if err != nil {
+			return nil, err
+		}
+	case "sync":
+		req, err = http.NewRequest("POST", c.Endpoint+FilePath, &b)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, ErrUnrecognizedExecType
 	}
+
 	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	return req, nil
@@ -139,7 +151,7 @@ func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, 
 		return nil, err
 	}
 
-	req, err := GenerateAPIRequest(c, pfp)
+	req, err := GenerateAPIRequest(c, pfp, "sync")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -163,42 +175,10 @@ func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*AsyncFileProcessResp
 		return nil, err
 	}
 
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-
-	fh, err := os.Open(pfp.File)
+	req, err := GenerateAPIRequest(c, pfp, "async")
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
 	}
-	fw, err := w.CreateFormFile("file", pfp.File)
-	if err != nil {
-		return nil, err
-	}
-	if _, err = io.Copy(fw, fh); err != nil {
-		return nil, err
-	}
-
-	if fw, err = w.CreateFormField("callback"); err != nil {
-		return nil, err
-	}
-	if _, err = fw.Write([]byte(pfp.Callback)); err != nil {
-		return nil, err
-	}
-	if fw, err = w.CreateFormField("metadata"); err != nil {
-		return nil, err
-	}
-	if _, err = fw.Write([]byte(pfp.Metadata)); err != nil {
-		return nil, err
-	}
-
-	w.Close()
-
-	req, err := http.NewRequest("POST", c.Endpoint+FilePath, &b)
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
-	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
