@@ -44,3 +44,95 @@ make test
 ```
 
 This is a convenience for the actual command to run Go unit testing, `go test -v -cover ./...` .  It's best to run the `make` command.
+
+## Examples
+
+Build a client
+
+```Go
+clientOpts := &scaniigo.ClientOpts{
+	Version:  "2.1",
+	Validate: false,
+}
+c, err := scaniigo.NewClient(clientOpts)
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Verify connectivity
+
+```Go
+res, err := c.Ping()
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Retrieve auth token
+
+```Go
+res, err := c.RetrieveAuthToken("auth-id-string")
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Create a temporary auth token
+
+```Go
+res, err := c.CreateTempAuthToken()
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Delete a temporary auth token
+
+```Go
+if err := c.DeleteTempAuthToken("token-id"); err != nil {
+	log.Fatalln(err)
+}
+```
+
+Retrieve a previously processed file
+
+```Go
+res, err := c.RetrieveProcessedFile("file-id-string")
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Process local file synchronously
+
+```Go
+pfp := &scaniigo.ProcessFileParams{
+	File: "fib",
+}
+pfr, err := c.ProcessFileSync(pfp)
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Process local file asynchronously
+
+```Go
+pfp := &scaniigo.ProcessFileParams{
+	File: "fib",
+}
+pfr, err := c.ProcessFileAsync(pfp)
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Process a remote file asynchronously
+
+```Go
+res, err := c.ProcessRemoteFileAsync()
+if err != nil {
+	log.Fatall(err)
+}
+```
