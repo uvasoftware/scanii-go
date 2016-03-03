@@ -131,7 +131,7 @@ if err != nil {
 Process a remote file asynchronously
 
 ```Go
-res, err := c.ProcessRemoteFileAsync()
+res, err := c.ProcessRemoteFileAsync(rfap)
 if err != nil {
 	log.Fatall(err)
 }
