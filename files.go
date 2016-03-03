@@ -3,8 +3,11 @@ package scaniigo
 import (
 	"bytes"
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // ProcessFileResponse holds the returned value from a call to
@@ -95,16 +98,42 @@ func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, 
 		return nil, err
 	}
 
-	var data url.Values
-	data.Set("callback", pfp.Callback)
-	data.Add("metadata", pfp.Metadata)
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
 
-	req, err := http.NewRequest("POST", c.Endpoint+FilePath, nil)
+	fh, err := os.Open(pfp.File)
+	if err != nil {
+		return nil, err
+	}
+	fw, err := w.CreateFormFile("file", pfp.File)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = io.Copy(fw, fh); err != nil {
+		return nil, err
+	}
+
+	if fw, err = w.CreateFormField("callback"); err != nil {
+		return nil, err
+	}
+	if _, err = fw.Write([]byte(pfp.Callback)); err != nil {
+		return nil, err
+	}
+	if fw, err = w.CreateFormField("metadata"); err != nil {
+		return nil, err
+	}
+	if _, err = fw.Write([]byte(pfp.Metadata)); err != nil {
+		return nil, err
+	}
+
+	w.Close()
+
+	req, err := http.NewRequest("POST", c.Endpoint+FilePath, &b)
 	if err != nil {
 		return nil, err
 	}
 	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
-	req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -125,16 +154,42 @@ func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*AsyncFileProcessResp
 		return nil, err
 	}
 
-	var data url.Values
-	data.Set("callback", pfp.Callback)
-	data.Add("metadata", pfp.Metadata)
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
 
-	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, bytes.NewBufferString(data.Encode()))
+	fh, err := os.Open(pfp.File)
+	if err != nil {
+		return nil, err
+	}
+	fw, err := w.CreateFormFile("file", pfp.File)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = io.Copy(fw, fh); err != nil {
+		return nil, err
+	}
+
+	if fw, err = w.CreateFormField("callback"); err != nil {
+		return nil, err
+	}
+	if _, err = fw.Write([]byte(pfp.Callback)); err != nil {
+		return nil, err
+	}
+	if fw, err = w.CreateFormField("metadata"); err != nil {
+		return nil, err
+	}
+	if _, err = fw.Write([]byte(pfp.Metadata)); err != nil {
+		return nil, err
+	}
+
+	w.Close()
+
+	req, err := http.NewRequest("POST", c.Endpoint+FilePath, &b)
 	if err != nil {
 		return nil, err
 	}
 	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
-	req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
