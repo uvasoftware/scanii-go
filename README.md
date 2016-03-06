@@ -4,8 +4,6 @@
 
 scanii-go is a library for use with the [UVA Soft](http://www.uvasoftware.com/) [scanii.com](http://www.scanii.com) API.
 
-Examples can be found in the `_examples` directory.
-
 ## Documentation
 
 Details about this package can be viewed by clicking on the "GoDoc" badge above, by running the local Go doc server, or by referencing the code comments.
