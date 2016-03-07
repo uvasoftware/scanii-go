@@ -68,13 +68,13 @@ func TestProcessRemoteFileAsync(t *testing.T) {
 		t.Error(err)
 	}
 	rfap := &RemoteFileAsyncParams{
-		Location: "",
+		Location: "https://github.com/uvasoftware/scanii-go/scan_files/test_binary",
 	}
 	pfr, err := c.ProcessRemoteFileAsync(rfap)
 	if err != nil {
 		t.Error(err)
 	}
-	if reflect.TypeOf(pfr).String() != "*scaniigo.ProcessFileResponse" {
+	if reflect.TypeOf(pfr).String() != "*scaniigo.AsyncFileProcessResponse" {
 		t.Error(ErrInvalidDataType)
 	}
 }

@@ -201,8 +201,13 @@ func (c *Client) ProcessRemoteFileAsync(rfap *RemoteFileAsyncParams) (*AsyncFile
 
 	var data url.Values
 	data.Set("location", rfap.Location)
-	data.Add("callback", rfap.Callback)
-	data.Add("metadata", rfap.Metadata)
+
+	switch {
+	case rfap.Callback != "":
+		data.Add("callback", rfap.Callback)
+	case rfap.Metadata != "":
+		data.Add("metadata", rfap.Metadata)
+	}
 
 	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, bytes.NewBufferString(data.Encode()))
 	if err != nil {

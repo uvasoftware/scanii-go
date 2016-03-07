@@ -10,7 +10,7 @@ GOTEST = $(GOCMD) test
 all: install
 
 test:
-	$(GOTEST) -v -cover github.com/uvasoftware/scanii-go
+	$(GOTEST) -v -cover -coverprofile coverate_report/cover.out ./...
 
 install:
 	$(GOINSTALL) -v
