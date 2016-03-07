@@ -49,10 +49,24 @@ go tool cover -html=coverage_report/cover.out
 
 ## Examples
 
-Build a client
+Build a basic client
 
 ```Go
 clientOpts := &scaniigo.ClientOpts{
+	Version:  "2.1",
+	Validate: false,
+}
+c, err := scaniigo.NewClient(clientOpts)
+if err != nil {
+	log.Fatalln(err)
+}
+```
+
+Build a client and override the base URL
+
+```Go
+clientOpts := &scaniigo.ClientOpts{
+    BaseURL: "api-eu1.scanii.com",
 	Version:  "2.1",
 	Validate: false,
 }
