@@ -199,7 +199,7 @@ func (c *Client) ProcessRemoteFileAsync(rfap *RemoteFileAsyncParams) (*AsyncFile
 		return nil, err
 	}
 
-	var data url.Values
+	data := url.Values{}
 	data.Set("location", rfap.Location)
 
 	switch {
