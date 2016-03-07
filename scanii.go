@@ -36,13 +36,18 @@ type APIAuth struct {
 
 // Client holds the current client settings
 type Client struct {
+	BaseURL    string
 	Endpoint   string
 	APIAuth    *APIAuth
 	HTTPClient *http.Client
 }
 
+// Validate validates certain
+func (c *Client) Validate() {}
+
 // ClientOpts holds the options to build a client
 type ClientOpts struct {
+	BaseURL  string
 	Version  string
 	Validate bool
 }
@@ -70,6 +75,12 @@ func NewClient(co *ClientOpts) (*Client, error) {
 			Timeout:   time.Duration(clientTimeout * time.Second),
 			Transport: tr,
 		},
+	}
+	switch co.BaseURL {
+	case "":
+		c.BaseURL = baseURL
+	default:
+		c.BaseURL = co.BaseURL
 	}
 	auth, err := getAuth()
 	if err != nil {
