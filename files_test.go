@@ -11,22 +11,22 @@ var remoteFile = "https://github.com/uvasoftware/scanii-go/scan_files/test_binar
 // TestRetrieveProcessedFile
 func TestRetrieveProcessedFile(t *testing.T) {
 	t.Parallel()
-}
-
-// TestValidate
-func TestValidate(t *testing.T) {
-	t.Parallel()
-	pfp := &ProcessFileParams{
-		File: localFile,
+	clientOpts := &ClientOpts{
+		Version:  "2.1",
+		Validate: false,
 	}
-	rfap := &RemoteFileAsyncParams{
-		Location: remoteFile,
+	c, err := NewClient(clientOpts)
+	if err != nil {
+		t.Error(err)
 	}
-	var testParams []Validator
-	testParams = append(testParams, pfp, rfap)
-	for _, i := range testParams {
-		if err := Validate(i); err != nil {
+	values := []string{"asdfasdfasdfasdf", ""}
+	for _, v := range values {
+		pfr, err := c.RetrieveProcessedFile(v)
+		if err != nil {
 			t.Error(err)
+		}
+		if reflect.TypeOf(pfr).String() != "*scaniigo.ProcessFileResponse" {
+			t.Error(ErrInvalidDataType)
 		}
 	}
 }
@@ -68,11 +68,11 @@ func TestProcessFileAsync(t *testing.T) {
 	pfp := &ProcessFileParams{
 		File: localFile,
 	}
-	pfr, err := c.ProcessFileSync(pfp)
+	pfr, err := c.ProcessFileAsync(pfp)
 	if err != nil {
 		t.Error(err)
 	}
-	if reflect.TypeOf(pfr).String() != "*scaniigo.ProcessFileResponse" {
+	if reflect.TypeOf(pfr).String() != "*scaniigo.AsyncFileProcessResponse" {
 		t.Error(ErrInvalidDataType)
 	}
 }

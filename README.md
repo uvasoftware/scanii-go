@@ -44,7 +44,7 @@ This is a convenience for the actual command to run Go unit testing, `go test -v
 To get a detailed report on what has bits of code have actual coverage, run the command below.  It will bring you into a browser session with explicit detail on what has coverage and what doesn't.
 
 ```Go
-go tool cover -html=cover.out
+go tool cover -html=coverage_report/cover.out
 ```
 
 ## Examples

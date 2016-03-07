@@ -54,3 +54,24 @@ func TestConvertDate(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// TestValidate
+func TestValidate(t *testing.T) {
+	t.Parallel()
+	pfp := &ProcessFileParams{
+		File: localFile,
+	}
+	rfap := &RemoteFileAsyncParams{
+		Location: remoteFile,
+	}
+	tatp := &TempAuthTokenParams{
+		Timeout: 10,
+	}
+	var testParams []Validator
+	testParams = append(testParams, pfp, rfap, tatp)
+	for _, i := range testParams {
+		if err := Validate(i); err != nil {
+			t.Error(err)
+		}
+	}
+}
