@@ -70,7 +70,6 @@ func NewClient(co *ClientOpts) (*Client, error) {
 		},
 	}
 	c := &Client{
-		Endpoint: baseURL + basePath + co.Version,
 		HTTPClient: &http.Client{
 			Timeout:   time.Duration(clientTimeout * time.Second),
 			Transport: tr,
@@ -78,9 +77,9 @@ func NewClient(co *ClientOpts) (*Client, error) {
 	}
 	switch co.BaseURL {
 	case "":
-		c.BaseURL = baseURL
+		c.Endpoint = baseURL + basePath + co.Version
 	default:
-		c.BaseURL = co.BaseURL
+		c.Endpoint = co.BaseURL + basePath + co.Version
 	}
 	auth, err := getAuth()
 	if err != nil {
