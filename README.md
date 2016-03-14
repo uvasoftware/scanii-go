@@ -76,7 +76,7 @@ if err != nil {
 }
 ```
 
-Verify connectivity
+Verify connectivity and authentication
 
 ```Go
 res, err := c.Ping()
