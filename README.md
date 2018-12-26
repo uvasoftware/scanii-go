@@ -17,20 +17,20 @@ client := scanii.NewClient(&scanii.ClientOpts{
 		Secret: secret,
 	})
 
-	file, _ := ioutil.TempFile("", "")
-	defer func() {
-		_ = file.Close()
-		_ = os.Remove(file.Name())
-	}()
+file, _ := ioutil.TempFile("", "")
+defer func() {
+    _ = file.Close()
+    _ = os.Remove(file.Name())
+}()
 
-	_, _ = file.Write([]byte("hello world"))
+_, _ = file.Write([]byte("hello world"))
 
-	metadata := map[string]string{
-		"m1": "v1",
-		"m2": "v2",
-	}
+metadata := map[string]string{
+    "m1": "v1",
+    "m2": "v2",
+}
 
-	r, err := client.Process(file.Name(), "", metadata)
+r, err := client.Process(file.Name(), "", metadata)
 
 ```
 
