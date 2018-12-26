@@ -1,4 +1,4 @@
-package scaniigo
+package scanii
 
 import (
 	"errors"
