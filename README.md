@@ -1,154 +1,43 @@
-# scanii-go
+### A pure Go interface to the Scanii content processing service - https://scanii.com
 
-[![GoDoc](https://godoc.org/github.com/uvasoftware/scanii-go?status.svg)](https://godoc.org/github.com/uvasoftware/scanii-go)
+### How to use this client
 
-scanii-go is a library for use with the [UVA Soft](http://www.uvasoftware.com/) [scanii.com](http://www.scanii.com) API.
-
-## Documentation
-
-Details about this package can be viewed by clicking on the "GoDoc" badge above, by running the local Go doc server, or by referencing the code comments.
-
-Run the local doc server.
-```sh
-$ godoc -http=":6060"
-```
-
-## Install
+#### Installing using Maven coordinates:
 
 ```sh
 $ go get github.com/uvasoftware/scanii-go
 ```
 
-## Development
+### Sample usage:
+ 
+```go
+client := scanii.NewClient(&scanii.ClientOpts{
+		Target: endpoints.LATEST,
+		Key:    key,
+		Secret: secret,
+	})
 
-When the API is expanded or altered, one can simply add or adjust the correlated method mapping.
+	file, _ := ioutil.TempFile("", "")
+	defer func() {
+		_ = file.Close()
+		_ = os.Remove(file.Name())
+	}()
 
-Field validation on parameter types is done by passing the given type to a Validate() function.  This function expects a parameter of type Validator which is an interface that implements a function with the signature of `Validate() error`.  
+	_, _ = file.Write([]byte("hello world"))
 
-### Dependencies
+	metadata := map[string]string{
+		"m1": "v1",
+		"m2": "v2",
+	}
 
-```sh
-$ make dep
+	r, err := client.Process(file.Name(), "", metadata)
+
 ```
 
-### Testing
+Please note that you will need a valid scanii.com account and API Credentials. 
 
-Test all changes by running the command below.  
+More advanced usage examples can be found [here](https://github.com/uvasoftware/scanii-java/blob/master/src/test/java/com/uvasoftware/scanii/ScaniiClientTest.java)
 
-```sh
-make test
-```
+General documentation on scanii can be found [here](http://docs.scanii.com)
+ 
 
-This is a convenience for the actual command to run Go unit testing, `go test -v -cover -coverprofile coverate_report/cover.out ./...` .  It's best to run the `make` command.
-
-To get a detailed report on what has bits of code have actual coverage, run the command below.  It will bring you into a browser session with explicit detail on what has coverage and what doesn't.
-
-```Go
-go tool cover -html=coverage_report/cover.out
-```
-
-## Examples
-
-Build a basic client
-
-```Go
-clientOpts := &scaniigo.ClientOpts{
-	Version:  "2.1",
-	Validate: false,
-}
-c, err := scaniigo.NewClient(clientOpts)
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Build a client and override the base URL
-
-```Go
-clientOpts := &scaniigo.ClientOpts{
-    BaseURL: "api-eu1.scanii.com",
-	Version:  "2.1",
-	Validate: false,
-}
-c, err := scaniigo.NewClient(clientOpts)
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Verify connectivity and authentication
-
-```Go
-res, err := c.Ping()
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Retrieve auth token
-
-```Go
-res, err := c.RetrieveAuthToken("auth-id-string")
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Create a temporary auth token
-
-```Go
-res, err := c.CreateTempAuthToken()
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Delete a temporary auth token
-
-```Go
-if err := c.DeleteTempAuthToken("token-id"); err != nil {
-	log.Fatalln(err)
-}
-```
-
-Retrieve a previously processed file
-
-```Go
-res, err := c.RetrieveProcessedFile("file-id-string")
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Process local file synchronously
-
-```Go
-pfp := &scaniigo.ProcessFileParams{
-	File: "fib",
-}
-pfr, err := c.ProcessFileSync(pfp)
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Process local file asynchronously
-
-```Go
-pfp := &scaniigo.ProcessFileParams{
-	File: "fib",
-}
-pfr, err := c.ProcessFileAsync(pfp)
-if err != nil {
-	log.Fatalln(err)
-}
-```
-
-Process a remote file asynchronously
-
-```Go
-res, err := c.ProcessRemoteFileAsync(rfap)
-if err != nil {
-	log.Fatall(err)
-}
-```

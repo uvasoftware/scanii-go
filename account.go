@@ -1,31 +1,31 @@
 package scanii
 
 import (
-	"errors"
-	"fmt"
+	"encoding/json"
 	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/models"
 	"net/http"
 )
 
 // Retrieves a previously processed file resource - https://docs.scanii.com/v2.1/resources.html#files
-func (c *Client) Ping() (bool, error) {
+func (c *Client) RetrieveAccountInfo() (*models.AccountInfo, error) {
 
-	req, err := http.NewRequest("GET", endpoints.Resolve(c.Target, "ping"), nil)
+	req, err := http.NewRequest("GET", endpoints.Resolve(c.Target, "account.json"), nil)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	req.Header.Set(userAgentHeader, c.UserAgentHeader)
 	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode == http.StatusOK {
-		return true, nil
+	var r models.AccountInfo
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		return nil, err
 	}
-
-	return false, errors.New(fmt.Sprintf("HTTP error: %s", res.Status))
+	return &r, nil
 }

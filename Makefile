@@ -10,7 +10,7 @@ GOTEST = $(GOCMD) test
 all: install
 
 test:
-	$(GOTEST) -v -cover -coverprofile coverage_report/cover.out ./...
+	$(GOTEST) -v
 
 install:
 	$(GOINSTALL) -v

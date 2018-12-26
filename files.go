@@ -1,230 +1,204 @@
-package scaniigo
+package scanii
 
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/models"
 	"io"
-	"log"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
-// ProcessFileResponse holds the returned value from a call to
-// the previously processed file endpoint
-type ProcessFileResponse struct {
-	ID            string   `json:"id"`
-	Checksum      string   `json:"checksum"`
-	ContentLength int      `json:"content_length"`
-	Findings      []string `json:"findings"`
-	CreationDate  string   `json:"creation_date"`
-	ContentType   string   `json:"content_type"`
-}
+const formParamName = "file"
 
-// AsyncFileProcessResponse
-type AsyncFileProcessResponse struct {
-	ID string `json:"id"`
-}
-
-// ProcessFileParams holds the options needed for processing calls
-type ProcessFileParams struct {
-	// File has the contents of the file to be processed
-	File string
-
-	// Callback is an optional callback URL to be notified once processing
-	// is completed
-	Callback string
-
-	// Metadata is an optional metadata argument to be stored with the resource
-	Metadata string
-}
-
-// Validate makes sure that the required parameters are present when this time is
-// to be used
-func (p *ProcessFileParams) Validate() error {
-	if p.File == "" {
-		return ErrFileFieldEmpty
-	}
-	return nil
-}
-
-// RemoteFileAsyncParams holds the options needed for remote async process calls
-type RemoteFileAsyncParams struct {
-	// Location contains the URL of the file to be fetched and processed.  This
-	// should be escaped prior to processing
-	Location string
-
-	// Callback is an optional callback URL to be notified once processing
-	// is completed
-	Callback string
-
-	// Metadata is an optional metadata argument to be stored with the resource
-	Metadata string
-}
-
-// Validate makes sure that the required parameters are present when this time is
-// to be used
-func (r *RemoteFileAsyncParams) Validate() error {
-	if r.Location == "" {
-		return ErrLocationFieldEmpty
-	}
-	return nil
-}
-
-// RetrieveProcessedFile retrieves a previously processed file resource
-func (c *Client) RetrieveProcessedFile(id string) (*ProcessFileResponse, error) {
-	req, err := http.NewRequest("GET", c.Endpoint+FilePath+"/"+id, nil)
+// Submits a file for processing synchronously - https://docs.scanii.com/v2.1/resources.html#files
+func (c *Client) Process(path, callback string, metadata map[string]string) (*models.ProcessingResult, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
+	defer file.Close()
 
-	res, err := c.HTTPClient.Do(req)
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(formParamName, filepath.Base(path))
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	_, err = io.Copy(part, file)
 
-	var pfr ProcessFileResponse
-	if err := json.NewDecoder(res.Body).Decode(&pfr); err != nil {
+	if len(callback) > 0 {
+		_ = writer.WriteField("callback", callback)
+	}
+
+	for key, val := range metadata {
+		_ = writer.WriteField(fmt.Sprintf("metadata[%s]", key), val)
+	}
+
+	err = writer.Close()
+	if err != nil {
 		return nil, err
 	}
-	return &pfr, nil
+
+	req, err := http.NewRequest("POST", endpoints.Resolve(c.Target, "files"), body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set(userAgentHeader, c.UserAgentHeader)
+	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
+	req.Header.Set(contentTypeHeader, writer.FormDataContentType())
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(string(content))
+	}
+
+	var r models.ProcessingResult
+	if err := json.Unmarshal(content, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
 }
 
-// builds a bytes buffer with the given file
-func (pfp *ProcessFileParams) Generate(c *Client, execType string) (*http.Request, error) {
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-
-	fh, err := os.Open(pfp.File)
+// Submits a file for processing asynchronously - https://docs.scanii.com/v2.1/resources.html#files
+func (c *Client) ProcessAsync(path, callback string, metadata map[string]string) (*models.PendingResult, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	fw, err := w.CreateFormFile("file", pfp.File)
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(formParamName, filepath.Base(path))
 	if err != nil {
 		return nil, err
 	}
-	if _, err = io.Copy(fw, fh); err != nil {
+	_, err = io.Copy(part, file)
+
+	if len(callback) > 0 {
+		_ = writer.WriteField("callback", callback)
+	}
+
+	for key, val := range metadata {
+		_ = writer.WriteField(fmt.Sprintf("metadata[%s]", key), val)
+	}
+
+	err = writer.Close()
+	if err != nil {
 		return nil, err
 	}
 
-	if fw, err = w.CreateFormField("callback"); err != nil {
+	req, err := http.NewRequest("POST", endpoints.Resolve(c.Target, "files/async"), body)
+	if err != nil {
 		return nil, err
 	}
-	if _, err = fw.Write([]byte(pfp.Callback)); err != nil {
-		return nil, err
-	}
-	if fw, err = w.CreateFormField("metadata"); err != nil {
-		return nil, err
-	}
-	if _, err = fw.Write([]byte(pfp.Metadata)); err != nil {
-		return nil, err
-	}
-	w.Close()
+	req.Header.Set(userAgentHeader, c.UserAgentHeader)
+	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
+	req.Header.Set(contentTypeHeader, writer.FormDataContentType())
 
-	var req *http.Request
-	switch execType {
-	case "async":
-		req, err = http.NewRequest("POST", c.Endpoint+FilePath, &b)
-		if err != nil {
-			return nil, err
-		}
-	case "sync":
-		req, err = http.NewRequest("POST", c.Endpoint+FilePath, &b)
-		if err != nil {
-			return nil, err
-		}
-	default:
-		return nil, ErrUnrecognizedExecType
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, errors.New(string(content))
 	}
 
-	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
-	req.Header.Set("Content-Type", w.FormDataContentType())
-	return req, nil
+	var r models.PendingResult
+	if err := json.Unmarshal(content, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
 }
 
-// ProcessFileSync submits a file for processing synchronously
-func (c *Client) ProcessFileSync(pfp *ProcessFileParams) (*ProcessFileResponse, error) {
-	if err := Validate(pfp); err != nil {
-		return nil, err
-	}
+// Retrieves a previously processed file resource - https://docs.scanii.com/v2.1/resources.html#files
+func (c *Client) Retrieve(id string) (*models.ProcessingResult, error) {
 
-	req, err := GenerateFileAPIRequest(c, pfp, "sync")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	res, err := c.HTTPClient.Do(req)
+	req, err := http.NewRequest("GET", endpoints.Resolve(c.Target, "files/")+id, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	req.Header.Set(userAgentHeader, c.UserAgentHeader)
+	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
 
-	var pfr ProcessFileResponse
-	if err := json.NewDecoder(res.Body).Decode(&pfr); err != nil {
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
 		return nil, err
 	}
-	return &pfr, nil
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(string(content))
+	}
+
+	var r models.ProcessingResult
+	if err := json.Unmarshal(content, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
 }
 
-// ProcessFileAsync submits a file for processing synchronously
-func (c *Client) ProcessFileAsync(pfp *ProcessFileParams) (*AsyncFileProcessResponse, error) {
-	if err := Validate(pfp); err != nil {
-		return nil, err
+// Submits a remote file to be processed asynchronously https://docs.scanii.com/v2.1/resources.html#files
+func (c *Client) Fetch(location, callback string, metadata map[string]string) (*models.PendingResult, error) {
+
+	body := url.Values{}
+	body.Set("location", location)
+
+	if len(callback) > 0 {
+		body.Set("callback", callback)
 	}
 
-	req, err := GenerateFileAPIRequest(c, pfp, "async")
-	if err != nil {
-		log.Fatalln(err)
+	for key, val := range metadata {
+		body.Set(fmt.Sprintf("metadata[%s]", key), val)
 	}
 
-	res, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	var afpr AsyncFileProcessResponse
-	if err := json.NewDecoder(res.Body).Decode(&afpr); err != nil {
-		return nil, err
-	}
-	return &afpr, nil
-}
-
-// ProcessRemoteFileAsync submits a file for processing synchronously
-func (c *Client) ProcessRemoteFileAsync(rfap *RemoteFileAsyncParams) (*AsyncFileProcessResponse, error) {
-	if err := Validate(rfap); err != nil {
-		return nil, err
-	}
-
-	data := url.Values{}
-	data.Set("location", rfap.Location)
-
-	switch {
-	case rfap.Callback != "":
-		data.Add("callback", rfap.Callback)
-	case rfap.Metadata != "":
-		data.Add("metadata", rfap.Metadata)
-	}
-
-	req, err := http.NewRequest("POST", c.Endpoint+FileAsyncPath, bytes.NewBufferString(data.Encode()))
+	req, err := http.NewRequest("POST", endpoints.Resolve(c.Target, "files/fetch"), strings.NewReader(body.Encode()))
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(c.APIAuth.Key, c.APIAuth.Secret)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set(userAgentHeader, c.UserAgentHeader)
+	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
+	req.Header.Set(contentTypeHeader, "application/x-www-form-urlencoded")
 
-	res, err := c.HTTPClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	var afpr AsyncFileProcessResponse
-	if err := json.NewDecoder(res.Body).Decode(&afpr); err != nil {
+	content, err := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, errors.New(string(content))
+	}
+
+	var r models.PendingResult
+	if err := json.Unmarshal(content, &r); err != nil {
 		return nil, err
 	}
-	return &afpr, nil
+	return &r, nil
 }
