@@ -7,9 +7,9 @@ jobs:
           GO111MODULE: "ON"
     steps:
       - checkout
-      - run
-        name: Test
-        command: make test
+      - run:
+          name: Test
+          command: make test
 
 
 workflows:
