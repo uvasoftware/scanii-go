@@ -2,10 +2,10 @@
 
 ### How to use this client
 
-#### Installing using Maven coordinates:
+#### Installing
 
 ```sh
-$ go get github.com/uvasoftware/scanii-go
+$ go get github.com/uvasoftware/scanii-go 
 ```
 
 ### Sample usage:
@@ -36,7 +36,7 @@ client := scanii.NewClient(&scanii.ClientOpts{
 
 Please note that you will need a valid scanii.com account and API Credentials. 
 
-More advanced usage examples can be found [here](https://github.com/uvasoftware/scanii-java/blob/master/src/test/java/com/uvasoftware/scanii/ScaniiClientTest.java)
+More advanced usage examples can be found [here](https://github.com/uvasoftware/scanii-go/blob/master/integration_test.go)
 
 General documentation on scanii can be found [here](http://docs.scanii.com)
  
