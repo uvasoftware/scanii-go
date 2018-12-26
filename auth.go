@@ -2,10 +2,10 @@ package scanii
 
 import (
 	"encoding/json"
+	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/models"
 	"net/http"
 	"net/url"
-	"scanii-go/pkg/scanii/endpoints"
-	"scanii-go/pkg/scanii/models"
 	"strings"
 )
 

@@ -1,12 +1,11 @@
-package test
+package scanii
 
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uvasoftware/scanii-go/endpoints"
 	"io/ioutil"
 	"os"
-	"scanii-go/pkg/scanii"
-	"scanii-go/pkg/scanii/endpoints"
 	"strings"
 	"testing"
 	"time"
@@ -16,7 +15,7 @@ var key = strings.Split(os.Getenv("SCANII_CREDS"), ":")[0]
 var secret = strings.Split(os.Getenv("SCANII_CREDS"), ":")[1]
 
 func TestPing(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -28,7 +27,7 @@ func TestPing(t *testing.T) {
 }
 
 func TestPingWithBadCredentials(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    "hello",
 		Secret: "world",
@@ -40,7 +39,7 @@ func TestPingWithBadCredentials(t *testing.T) {
 }
 
 func TestPingWithBadCredentials2(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    "",
 		Secret: "",
@@ -52,7 +51,7 @@ func TestPingWithBadCredentials2(t *testing.T) {
 }
 
 func TestProcess(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -104,7 +103,7 @@ func TestProcess(t *testing.T) {
 }
 
 func TestProcessAsync(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -148,7 +147,7 @@ func TestProcessAsync(t *testing.T) {
 }
 
 func TestProcessWithFindings(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -178,7 +177,7 @@ func TestProcessWithFindings(t *testing.T) {
 }
 
 func TestFetchWithFindings(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.V20_EU1,
 		Key:    key,
 		Secret: secret,
@@ -211,7 +210,7 @@ func TestFetchWithFindings(t *testing.T) {
 }
 
 func TestRetrieveAccountInfo(t *testing.T) {
-	client := scanii.NewClient(&scanii.ClientOpts{
+	client := NewClient(&ClientOpts{
 		Target: endpoints.V21_AP1,
 		Key:    key,
 		Secret: secret,

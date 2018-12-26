@@ -3,8 +3,8 @@ package scanii
 import (
 	"errors"
 	"fmt"
+	"github.com/uvasoftware/scanii-go/endpoints"
 	"net/http"
-	"scanii-go/pkg/scanii/endpoints"
 )
 
 // Retrieves a previously processed file resource - https://docs.scanii.com/v2.1/resources.html#files

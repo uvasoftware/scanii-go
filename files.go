@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/models"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -12,8 +14,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"scanii-go/pkg/scanii/endpoints"
-	"scanii-go/pkg/scanii/models"
 	"strings"
 )
 
@@ -165,7 +165,7 @@ func (c *Client) Retrieve(id string) (*models.ProcessingResult, error) {
 // Submits a remote file to be processed asynchronously https://docs.scanii.com/v2.1/resources.html#files
 func (c *Client) Fetch(location, callback string, metadata map[string]string) (*models.PendingResult, error) {
 
-	body :=url.Values{}
+	body := url.Values{}
 	body.Set("location", location)
 
 	if len(callback) > 0 {

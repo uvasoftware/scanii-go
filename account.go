@@ -2,9 +2,9 @@ package scanii
 
 import (
 	"encoding/json"
+	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/models"
 	"net/http"
-	"scanii-go/pkg/scanii/endpoints"
-	"scanii-go/pkg/scanii/models"
 )
 
 // Retrieves a previously processed file resource - https://docs.scanii.com/v2.1/resources.html#files
