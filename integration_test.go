@@ -84,6 +84,8 @@ func TestProcess(t *testing.T) {
 		t.FailNow()
 	}
 
+	time.Sleep(1 * time.Second)
+
 	// now retrieving
 
 	r2, err := client.Retrieve(r.ID)
