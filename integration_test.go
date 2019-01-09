@@ -235,5 +235,48 @@ func TestRetrieveAccountInfo(t *testing.T) {
 	} else {
 		t.FailNow()
 	}
+}
+func TestCreateAndUseAuthToken(t *testing.T) {
+	client := NewClient(&ClientOpts{
+		Target: endpoints.V21_AP1,
+		Key:    key,
+		Secret: secret,
+	})
+
+	token, err := client.CreateAuthToken(30)
+	require.Nil(t, err)
+
+	if assert.NotNil(t, token) {
+		require.NotEmpty(t, token.ID)
+		require.NotNil(t, token.CreationDate)
+		require.NotNil(t, token.ExpirationDate)
+	} else {
+		t.FailNow()
+	}
+
+	// now we attempt to retrieve it
+	token2, err := client.RetrieveAuthToken(token.ID)
+	if assert.NotNil(t, token2) {
+		require.NotEmpty(t, token2.ID)
+		require.NotNil(t, token2.CreationDate)
+		require.NotNil(t, token2.ExpirationDate)
+		require.Equal(t, token.ID, token2.ID)
+		require.Equal(t, token.ExpirationDate, token2.ExpirationDate)
+		require.Equal(t, token.CreationDate, token2.CreationDate)
+	} else {
+		t.FailNow()
+	}
+
+	// now we attempt to use it
+	client2 := NewClient(&ClientOpts{
+		Target: endpoints.LATEST,
+		Key:    token.ID,
+	})
+	_, err = client2.Ping()
+	require.Nil(t, err)
+
+	// now we attempt to delete it
+	err = client.DeleteAuthToken(token.ID)
+	require.Nil(t, err)
 
 }
