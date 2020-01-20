@@ -1,4 +1,4 @@
-package scanii
+package client
 
 import (
 	"encoding/base64"
@@ -7,7 +7,7 @@ import (
 )
 
 //TODO(raf) always update this prior to a release:
-var version = "1.0.0"
+var version = "2.0.0"
 
 const userAgentHeader = "User-Agent"
 const authorizationHeader = "Authorization"
@@ -22,7 +22,7 @@ type Client struct {
 }
 
 // ClientOpts holds the options to build a client
-type ClientOpts struct {
+type Opts struct {
 	Target     string
 	Key        string
 	Secret     string
@@ -30,7 +30,7 @@ type ClientOpts struct {
 }
 
 // Creates a new client
-func NewClient(co *ClientOpts) *Client {
+func NewClient(co *Opts) *Client {
 	client := new(Client)
 
 	if co.HTTPClient == nil {

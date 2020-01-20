@@ -10,13 +10,13 @@ GOTEST = $(GOCMD) test
 all: install
 
 test:
-	$(GOTEST) -v
+	$(GOTEST) -v ./pkg/client/
 
 install:
-	$(GOINSTALL) -v
+	$(GOINSTALL) -v ./pkg/client/
 
 clean:
 	$(GOCLEAN) -n -i -x
 
 build: 
-	$(GOBUILD) -v -race 
+	$(GOBUILD) -v -race ./pkg/client/

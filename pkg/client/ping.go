@@ -1,9 +1,9 @@
-package scanii
+package client
 
 import (
 	"errors"
 	"fmt"
-	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/pkg/endpoints"
 	"net/http"
 )
 
