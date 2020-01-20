@@ -1,12 +1,12 @@
-package scanii
+package client
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/uvasoftware/scanii-go/endpoints"
-	"github.com/uvasoftware/scanii-go/models"
+	"github.com/uvasoftware/scanii-go/pkg/endpoints"
+	"github.com/uvasoftware/scanii-go/pkg/models"
 	"io"
 	"io/ioutil"
 	"mime/multipart"

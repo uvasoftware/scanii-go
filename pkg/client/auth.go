@@ -1,10 +1,10 @@
-package scanii
+package client
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/uvasoftware/scanii-go/endpoints"
-	"github.com/uvasoftware/scanii-go/models"
+	"github.com/uvasoftware/scanii-go/pkg/endpoints"
+	"github.com/uvasoftware/scanii-go/pkg/models"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -89,7 +89,9 @@ func (c *Client) DeleteAuthToken(id string) error {
 	req.Header.Set(authorizationHeader, c.AuthenticationHeader)
 
 	res, err := c.HTTPClient.Do(req)
-
+	if err != nil {
+		return err
+	}
 	content, err := ioutil.ReadAll(res.Body)
 
 	if res.StatusCode != http.StatusNoContent {

@@ -1,9 +1,9 @@
-package scanii
+package client
 
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/uvasoftware/scanii-go/endpoints"
+	"github.com/uvasoftware/scanii-go/pkg/endpoints"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -15,7 +15,7 @@ var key = strings.Split(os.Getenv("SCANII_CREDS"), ":")[0]
 var secret = strings.Split(os.Getenv("SCANII_CREDS"), ":")[1]
 
 func TestPing(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -26,8 +26,27 @@ func TestPing(t *testing.T) {
 	require.True(t, response, "ping must pong back")
 }
 
+func TestPingAllTargets(t *testing.T) {
+	for _, el := range []string{
+		endpoints.V20_AP1, endpoints.V20_AP2,
+		endpoints.V21_AP1, endpoints.V21_AP2,
+		endpoints.V20_EU1, endpoints.V20_EU2,
+		endpoints.V21_EU1, endpoints.V21_EU2,
+		endpoints.V20_US1, endpoints.V21_US1,
+	} {
+		client := NewClient(&Opts{
+			Target: el,
+			Key:    key,
+			Secret: secret,
+		})
+
+		_, err := client.Ping()
+		require.Nil(t, err)
+	}
+}
+
 func TestPingWithBadCredentials(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    "hello",
 		Secret: "world",
@@ -39,7 +58,7 @@ func TestPingWithBadCredentials(t *testing.T) {
 }
 
 func TestPingWithBadCredentials2(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    "",
 		Secret: "",
@@ -51,7 +70,7 @@ func TestPingWithBadCredentials2(t *testing.T) {
 }
 
 func TestProcess(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -105,7 +124,7 @@ func TestProcess(t *testing.T) {
 }
 
 func TestProcessAsync(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -149,7 +168,7 @@ func TestProcessAsync(t *testing.T) {
 }
 
 func TestProcessWithFindings(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    key,
 		Secret: secret,
@@ -179,7 +198,7 @@ func TestProcessWithFindings(t *testing.T) {
 }
 
 func TestFetchWithFindings(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.V20_EU1,
 		Key:    key,
 		Secret: secret,
@@ -212,7 +231,7 @@ func TestFetchWithFindings(t *testing.T) {
 }
 
 func TestRetrieveAccountInfo(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.V21_AP1,
 		Key:    key,
 		Secret: secret,
@@ -237,7 +256,7 @@ func TestRetrieveAccountInfo(t *testing.T) {
 	}
 }
 func TestCreateAndUseAuthToken(t *testing.T) {
-	client := NewClient(&ClientOpts{
+	client := NewClient(&Opts{
 		Target: endpoints.V21_AP1,
 		Key:    key,
 		Secret: secret,
@@ -268,7 +287,7 @@ func TestCreateAndUseAuthToken(t *testing.T) {
 	}
 
 	// now we attempt to use it
-	client2 := NewClient(&ClientOpts{
+	client2 := NewClient(&Opts{
 		Target: endpoints.LATEST,
 		Key:    token.ID,
 	})
