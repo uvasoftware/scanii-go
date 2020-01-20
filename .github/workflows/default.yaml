@@ -1,4 +1,4 @@
-name: Go
+name: Build & Test
 on: [pull_request]
 jobs:
 
@@ -28,3 +28,5 @@ jobs:
 
       - name: Test
         run: make test
+        env:
+          SCANII_CREDS: ${{ secrets.SCANII_CREDS }}
